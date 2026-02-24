@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { MapPin, Users, Calendar, Search, List, Map as MapIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Search, List, Map as MapIcon } from 'lucide-react';
 import { MapView } from './components/MapView';
 import { CourtCard } from './components/CourtCard';
 import { PlayerMatchModal } from './components/PlayerMatchModal';
@@ -116,14 +116,28 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showPlayerModal, setShowPlayerModal] = useState(false);
 
-  const courtsWithLiveCounts: Court[] = courts.map((court) => ({
-    ...court,
-    activePlayers: mockPlayers.filter((player) => player.courtId === court.id).length,
-  }));
+  const courtsWithLiveCounts: Court[] = useMemo(
+    () =>
+      courts.map((court) => ({
+        ...court,
+        activePlayers: mockPlayers.filter((player) => player.courtId === court.id).length,
+      })),
+    []
+  );
 
-  const filteredCourts = courtsWithLiveCounts.filter(court =>
-    court.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    court.city.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCourts = useMemo(
+    () =>
+      courtsWithLiveCounts.filter(
+        (court) =>
+          court.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          court.city.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [courtsWithLiveCounts, searchQuery]
+  );
+
+  const totalCourtCount = useMemo(
+    () => courts.reduce((sum, court) => sum + court.courts, 0),
+    []
   );
 
   const handleCourtSelect = (court: Court) => {
@@ -132,28 +146,32 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col" style={{ height: '100vh', overflow: 'hidden' }}>
+    <div className="h-screen min-h-screen bg-gray-50 flex flex-col overflow-hidden" style={{ height: '100dvh' }}>
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="px-4 py-3">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-green-600">PadelMatch DK</h1>
+        <div className="px-3 sm:px-4 py-3">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h1 className="text-green-600 text-lg">PadelMatch DK</h1>
             <div className="flex gap-2">
               <button
                 onClick={() => setView('map')}
-                className={`p-2 rounded-lg transition-colors ${
+                aria-label="Switch to map view"
+                className={`min-h-11 px-3 rounded-lg transition-colors flex items-center gap-1.5 ${
                   view === 'map' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 <MapIcon className="w-5 h-5" />
+                <span className="text-sm">Map</span>
               </button>
               <button
                 onClick={() => setView('list')}
-                className={`p-2 rounded-lg transition-colors ${
+                aria-label="Switch to list view"
+                className={`min-h-11 px-3 rounded-lg transition-colors flex items-center gap-1.5 ${
                   view === 'list' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 <List className="w-5 h-5" />
+                <span className="text-sm">List</span>
               </button>
             </div>
           </div>
@@ -166,14 +184,14 @@ export default function App() {
               placeholder="Search courts or cities..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full pl-10 pr-4 py-2.5 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
+      <main className="flex-1 min-h-0 overflow-hidden">
         {view === 'map' ? (
           <MapView 
             courts={filteredCourts} 
@@ -181,8 +199,8 @@ export default function App() {
             selectedCourt={selectedCourt}
           />
         ) : (
-          <div className="h-full overflow-y-auto pb-20">
-            <div className="p-4 space-y-3">
+          <div className="h-full overflow-y-auto pb-24">
+            <div className="p-3 sm:p-4 space-y-3">
               {filteredCourts.map((court) => (
                 <CourtCard
                   key={court.id}
@@ -191,6 +209,11 @@ export default function App() {
                   onViewPlayers={() => handleCourtSelect(court)}
                 />
               ))}
+              {filteredCourts.length === 0 && (
+                <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-600">
+                  No courts found for "{searchQuery}".
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -209,20 +232,21 @@ export default function App() {
       )}
 
       {/* Bottom Info Bar */}
-      <div className="bg-white border-t border-gray-200 p-3">
-        <div className="flex items-center justify-around text-center">
-          <div>
+      <div
+        className="bg-white border-t border-gray-200 px-3 py-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)' }}
+      >
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="min-w-0">
             <div className="text-green-600">{courts.length}</div>
             <div className="text-gray-500 text-xs">Courts</div>
           </div>
-          <div className="h-8 w-px bg-gray-200" />
-          <div>
+          <div className="min-w-0">
             <div className="text-green-600">{mockPlayers.length}</div>
             <div className="text-gray-500 text-xs">Active Players</div>
           </div>
-          <div className="h-8 w-px bg-gray-200" />
-          <div>
-            <div className="text-green-600">{courts.reduce((sum, c) => sum + c.courts, 0)}</div>
+          <div className="min-w-0">
+            <div className="text-green-600">{totalCourtCount}</div>
             <div className="text-gray-500 text-xs">Total Courts</div>
           </div>
         </div>

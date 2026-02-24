@@ -82,7 +82,7 @@ function createCustomIcon(L: any, isSelected: boolean, activePlayers: number) {
 
 function createPopupHtml(court: Court) {
   return `
-    <div style="font-family: system-ui, -apple-system, sans-serif; min-width: 200px;">
+    <div style="font-family: system-ui, -apple-system, sans-serif; min-width: 180px;">
       <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #111827;">${court.name}</h3>
       <p style="margin: 0 0 4px 0; font-size: 14px; color: #6b7280;">${court.address}</p>
       <p style="margin: 0 0 12px 0; font-size: 14px; color: #6b7280;">${court.city}</p>
@@ -159,7 +159,7 @@ export function MapView({ courts, onCourtSelect, selectedCourt }: MapViewProps) 
       center: [56.2639, 9.5018],
       zoom: 7,
       scrollWheelZoom: true,
-      zoomControl: true,
+      zoomControl: window.innerWidth >= 640,
     });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -216,7 +216,12 @@ export function MapView({ courts, onCourtSelect, selectedCourt }: MapViewProps) 
 
       const marker = L.marker([court.lat, court.lng], { icon })
         .addTo(map)
-        .bindPopup(createPopupHtml(court), { autoPan: true, keepInView: true });
+        .bindPopup(createPopupHtml(court), {
+          autoPan: true,
+          keepInView: true,
+          autoPanPadding: [24, 96],
+          maxWidth: 240,
+        });
 
       marker.on('popupopen', (e: any) => {
         try {
@@ -258,7 +263,8 @@ export function MapView({ courts, onCourtSelect, selectedCourt }: MapViewProps) 
     const bounds = L.latLngBounds(courts.map((court) => [court.lat, court.lng]));
 
     try {
-      mapInstanceRef.current.fitBounds(bounds, { padding: [32, 32], maxZoom: 10 });
+      const padding = window.innerWidth < 640 ? [20, 20] : [32, 32];
+      mapInstanceRef.current.fitBounds(bounds, { padding, maxZoom: 10 });
     } catch {
       // ignore
     }
@@ -298,7 +304,7 @@ export function MapView({ courts, onCourtSelect, selectedCourt }: MapViewProps) 
     <div className="relative w-full h-full" style={{ minHeight: 0 }}>
       <div ref={mapRef} className="absolute inset-0" />
 
-      <div className="absolute bottom-4 left-4 bg-white rounded-xl shadow-lg p-4 max-w-[280px]" style={{ zIndex: 650 }}>
+      <div className="absolute bottom-4 left-4 hidden sm:block bg-white rounded-xl shadow-lg p-4 max-w-[280px]" style={{ zIndex: 650 }}>
         <h4 className="text-gray-900 mb-3">Map legend</h4>
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-3">

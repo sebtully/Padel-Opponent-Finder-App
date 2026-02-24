@@ -10,10 +10,10 @@ interface CourtCardProps {
 export function CourtCard({ court, players, onViewPlayers }: CourtCardProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
-      <div className="relative h-40">
+      <div className="relative h-36 sm:h-40">
         <img src={court.image} alt={court.name} className="w-full h-full object-cover" />
         {players.length > 0 && (
-          <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm shadow-lg">
+          <div className="absolute top-3 right-3 bg-green-500 text-white px-2.5 py-1 rounded-full text-xs sm:text-sm shadow-lg">
             {players.length} looking to play
           </div>
         )}
@@ -24,7 +24,7 @@ export function CourtCard({ court, players, onViewPlayers }: CourtCardProps) {
         
         <div className="flex items-start gap-2 text-gray-600 mb-3 text-sm">
           <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-          <div>
+          <div className="break-words">
             <div>{court.address}</div>
             <div>{court.city}</div>
           </div>
@@ -37,10 +37,10 @@ export function CourtCard({ court, players, onViewPlayers }: CourtCardProps) {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={onViewPlayers}
-            className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 min-h-11 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
           >
             <Users className="w-4 h-4" />
             Find Players
@@ -49,7 +49,7 @@ export function CourtCard({ court, players, onViewPlayers }: CourtCardProps) {
             href={court.bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+            className="flex-1 min-h-11 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
           >
             <Calendar className="w-4 h-4" />
             Book Court

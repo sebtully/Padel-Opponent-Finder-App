@@ -38,8 +38,13 @@ export function PlayerMatchModal({ court, players, onClose }: PlayerMatchModalPr
     <div
       className="fixed inset-0 flex items-end sm:items-center sm:justify-center"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 10000 }}
+      onClick={onClose}
     >
-      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-hidden flex flex-col animate-slide-up">
+      <div
+        className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[92dvh] sm:max-h-[90vh] overflow-hidden flex flex-col animate-slide-up"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="relative">
           <div className="h-32 bg-gradient-to-br from-green-500 to-green-600 relative overflow-hidden">
@@ -51,7 +56,8 @@ export function PlayerMatchModal({ court, players, onClose }: PlayerMatchModalPr
           </div>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            className="absolute top-4 right-4 min-h-11 min-w-11 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -65,15 +71,15 @@ export function PlayerMatchModal({ court, players, onClose }: PlayerMatchModalPr
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {/* Action buttons */}
-          <div className="flex gap-2 mb-4">
-            <button className="flex-1 bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors">
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
+            <button className="flex-1 min-h-11 bg-green-500 text-white px-4 py-3 rounded-lg hover:bg-green-600 transition-colors">
               I'm Playing Here
             </button>
             <a
               href={court.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 min-h-11 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               <Calendar className="w-4 h-4" />
               Book Court
@@ -105,7 +111,7 @@ export function PlayerMatchModal({ court, players, onClose }: PlayerMatchModalPr
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-gray-900">{player.name}</div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-gray-600 mt-1">
                         <div className="flex items-center gap-1">
                           <TrendingUp className="w-3 h-3" />
                           <span>{player.level}</span>
